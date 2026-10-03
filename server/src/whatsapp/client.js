@@ -18,6 +18,8 @@ function getWhatsAppConfig() {
     phoneNumberId !== 'YOUR_PHONE_NUMBER_ID'
   );
 
+  const isMockMode = process.env.MOCK_MODE === 'true';
+
   return {
     token,
     phoneNumberId,
@@ -26,6 +28,7 @@ function getWhatsAppConfig() {
     templateName,
     templateLanguage,
     isConfigured,
+    isMockMode,
     apiUrl: `https://graph.facebook.com/${version}/${phoneNumberId}/messages`,
   };
 }
@@ -89,15 +92,25 @@ function buildMessagePayload(phone, name, productName, trackingNumber, dispatchD
 }
 
 /**
- * Sends a single WhatsApp template message via Meta Cloud API
+ * Sends a single WhatsApp template message via Meta Cloud API or Mock Service
  */
 async function sendTemplateMessage({ phone, customerName, productName, trackingNumber, dispatchDate, courier }) {
   const config = getWhatsAppConfig();
 
+  // If Mock Mode is enabled in .env
+  if (config.isMockMode) {
+    const mockMessageId = `wamid.HBgL${Math.random().toString(36).substring(2, 12).toUpperCase()}==`;
+    return {
+      success: true,
+      messageId: mockMessageId,
+      isMock: true,
+    };
+  }
+
   if (!config.isConfigured) {
     return {
       success: false,
-      error: 'Meta WhatsApp credentials are not configured in environment variables. Please configure WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID in .env file.',
+      error: 'Meta WhatsApp credentials are not configured in environment variables. Please configure WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID in .env file, or set MOCK_MODE=true for testing.',
       isConfigError: true,
     };
   }
