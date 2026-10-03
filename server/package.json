@@ -1,0 +1,38 @@
+{
+  "name": "fast-whatsapp-automation-server",
+  "version": "1.0.0",
+  "description": "Backend service for FAST Education WhatsApp Delivery Automation",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --runInBand --detectOpenHandles"
+  },
+  "keywords": [
+    "whatsapp",
+    "automation",
+    "fast-education",
+    "excel",
+    "meta-cloud-api"
+  ],
+  "author": "FAST Education",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "mongoose": "^8.9.3",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.8.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.1.3",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.0.0"
+  }
+}

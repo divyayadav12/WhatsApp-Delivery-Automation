@@ -1,0 +1,14 @@
+{
+  "name": "fast-whatsapp-automation",
+  "version": "1.0.0",
+  "description": "FAST Education - WhatsApp Delivery Automation System",
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "test": "cd server && npm test"
+  },
+  "author": "FAST Education",
+  "license": "ISC"
+}
