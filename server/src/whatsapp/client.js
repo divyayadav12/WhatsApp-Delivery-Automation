@@ -1,4 +1,9 @@
 const axios = require('axios');
+const https = require('https');
+
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false,
+});
 
 /**
  * Returns configured Meta WhatsApp environment values
@@ -65,6 +70,23 @@ Delivery Team`;
  */
 function buildMessagePayload(phone, name, productName, trackingNumber, dispatchDate, courier) {
   const config = getWhatsAppConfig();
+  
+  // If template is hello_world (Meta default test template)
+  if (config.templateName === 'hello_world') {
+    return {
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to: phone,
+      type: 'template',
+      template: {
+        name: 'hello_world',
+        language: {
+          code: 'en_US',
+        },
+      },
+    };
+  }
+
   return {
     messaging_product: 'whatsapp',
     recipient_type: 'individual',
@@ -123,6 +145,7 @@ async function sendTemplateMessage({ phone, customerName, productName, trackingN
         'Authorization': `Bearer ${config.token}`,
         'Content-Type': 'application/json',
       },
+      httpsAgent,
       timeout: 15000,
     });
 

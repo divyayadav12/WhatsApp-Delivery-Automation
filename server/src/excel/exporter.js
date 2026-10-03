@@ -54,7 +54,7 @@ function generateSampleTemplateExcel() {
   const sampleData = [
     {
       'name': 'Rahul Sharma',
-      'phone': '918839250427',
+      'phone': '919584510000',
       'product_name': 'CA Inter IDT Full Book Set 8.0',
       'tracking_number': 'C1144011340IN',
       'dispatch_date': '03-10-2026',
@@ -62,11 +62,19 @@ function generateSampleTemplateExcel() {
     },
     {
       'name': 'Priya Patel',
-      'phone': '917746875564',
+      'phone': '918889888034',
       'product_name': 'CA Final Tax Fast Track Book',
       'tracking_number': 'DT987654321IN',
       'dispatch_date': '03-10-2026',
       'courier': 'DTDC Courier'
+    },
+    {
+      'name': 'Garv Joshi',
+      'phone': '918839250427',
+      'product_name': 'CA Foundation Accounting Module',
+      'tracking_number': 'BLR123456789',
+      'dispatch_date': '03-10-2026',
+      'courier': 'Blue Dart'
     }
   ];
 

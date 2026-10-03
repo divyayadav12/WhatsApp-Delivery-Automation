@@ -1,5 +1,10 @@
 const axios = require('axios');
+const https = require('https');
 const { getWhatsAppConfig } = require('../whatsapp/client');
+
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false,
+});
 
 /**
  * Get system & WhatsApp configuration status (without exposing secrets)
@@ -56,6 +61,7 @@ async function testConnection(req, res) {
         headers: {
           'Authorization': `Bearer ${config.token}`,
         },
+        httpsAgent,
         timeout: 10000,
       }
     );
