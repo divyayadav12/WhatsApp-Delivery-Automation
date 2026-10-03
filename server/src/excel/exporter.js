@@ -54,7 +54,7 @@ function generateSampleTemplateExcel() {
   const sampleData = [
     {
       'name': 'Rahul Sharma',
-      'phone': '919584510000',
+      'phone': '919669011750',
       'product_name': 'CA Inter IDT Full Book Set 8.0',
       'tracking_number': 'C1144011340IN',
       'dispatch_date': '03-10-2026',
@@ -62,7 +62,7 @@ function generateSampleTemplateExcel() {
     },
     {
       'name': 'Priya Patel',
-      'phone': '918889888034',
+      'phone': '918103554325',
       'product_name': 'CA Final Tax Fast Track Book',
       'tracking_number': 'DT987654321IN',
       'dispatch_date': '03-10-2026',
@@ -73,6 +73,30 @@ function generateSampleTemplateExcel() {
       'phone': '918839250427',
       'product_name': 'CA Foundation Accounting Module',
       'tracking_number': 'BLR123456789',
+      'dispatch_date': '03-10-2026',
+      'courier': 'Blue Dart'
+    },
+    {
+      'name': 'Ankit Verma',
+      'phone': '917746875564',
+      'product_name': 'CA Inter Law Study Material',
+      'tracking_number': 'C1144019999IN',
+      'dispatch_date': '03-10-2026',
+      'courier': 'India Post'
+    },
+    {
+      'name': 'Neha Singh',
+      'phone': '919584510000',
+      'product_name': 'CA Final Audit Crush Book',
+      'tracking_number': 'DT88887777IN',
+      'dispatch_date': '03-10-2026',
+      'courier': 'DTDC Courier'
+    },
+    {
+      'name': 'Amit Kumar',
+      'phone': '918889888034',
+      'product_name': 'CA Inter Costing Fast Track',
+      'tracking_number': 'BLR99998888',
       'dispatch_date': '03-10-2026',
       'courier': 'Blue Dart'
     }
