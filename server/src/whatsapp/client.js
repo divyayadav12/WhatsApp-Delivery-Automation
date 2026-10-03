@@ -130,20 +130,41 @@ async function sendTemplateMessage({ phone, customerName, productName, trackingN
     };
   }
 
-  // Priority 1: If Teleobi Webhook URL is provided by Sir
+  // Priority 1: Teleobi Webhook URL provided by Sir
   if (config.teleobiUrl) {
     try {
+      const cleanPhone = String(phone).trim();
+      const cleanName = String(customerName || '').trim();
+      const cleanProduct = String(productName || '').trim();
+      const cleanTracking = String(trackingNumber || '').trim();
+      const cleanDate = String(dispatchDate || '').trim();
+      const cleanCourier = String(courier || '').trim();
+
+      // Exhaustive payload covering all standard Teleobi workflow variable keys
       const payload = {
-        phone: String(phone).trim(),
-        name: String(customerName || '').trim(),
-        customerName: String(customerName || '').trim(),
-        product_name: String(productName || '').trim(),
-        productName: String(productName || '').trim(),
-        tracking_number: String(trackingNumber || '').trim(),
-        trackingNumber: String(trackingNumber || '').trim(),
-        dispatch_date: String(dispatchDate || '').trim(),
-        dispatchDate: String(dispatchDate || '').trim(),
-        courier: String(courier || '').trim(),
+        phone: cleanPhone,
+        to: cleanPhone,
+        mobile: cleanPhone,
+        name: cleanName,
+        customerName: cleanName,
+        customer_name: cleanName,
+        product_name: cleanProduct,
+        productName: cleanProduct,
+        tracking_number: cleanTracking,
+        trackingNumber: cleanTracking,
+        dispatch_date: cleanDate,
+        dispatchDate: cleanDate,
+        courier: cleanCourier,
+        var1: cleanName,
+        var2: cleanProduct,
+        var3: cleanTracking,
+        var4: cleanDate,
+        var5: cleanCourier,
+        param1: cleanName,
+        param2: cleanProduct,
+        param3: cleanTracking,
+        param4: cleanDate,
+        param5: cleanCourier,
       };
 
       const response = await axios.post(config.teleobiUrl, payload, {
@@ -173,7 +194,6 @@ async function sendTemplateMessage({ phone, customerName, productName, trackingN
 
       console.error(`[ERROR] Teleobi send error for ${phone}:`, errorMsg);
 
-      // Fallback to Meta API if configured, otherwise return error
       if (!config.isConfigured) {
         return {
           success: false,
