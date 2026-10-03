@@ -6,9 +6,10 @@ const httpsAgent = new https.Agent({
 });
 
 /**
- * Returns configured Meta WhatsApp environment values
+ * Returns configured Meta WhatsApp and Teleobi environment values
  */
 function getWhatsAppConfig() {
+  const teleobiUrl = process.env.TELEOBI_WEBHOOK_URL || 'https://dash.teleobi.com/webhook/whatsapp-workflow/61602.183817.306288.1785566380';
   const token = process.env.WHATSAPP_ACCESS_TOKEN;
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
   const businessAccountId = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID;
@@ -16,22 +17,23 @@ function getWhatsAppConfig() {
   const templateName = process.env.WHATSAPP_TEMPLATE_NAME || 'fast_book_dispatch';
   const templateLanguage = process.env.WHATSAPP_TEMPLATE_LANGUAGE || 'en_US';
 
-  const isConfigured = Boolean(
-    token && 
-    token !== 'YOUR_META_WHATSAPP_ACCESS_TOKEN' && 
-    phoneNumberId && 
-    phoneNumberId !== 'YOUR_PHONE_NUMBER_ID'
-  );
-
+  const isTeleobiEnabled = Boolean(teleobiUrl);
   const isMockMode = process.env.MOCK_MODE === 'true';
 
+  const isConfigured = Boolean(
+    isTeleobiEnabled ||
+    (token && token !== 'YOUR_META_WHATSAPP_ACCESS_TOKEN' && phoneNumberId && phoneNumberId !== 'YOUR_PHONE_NUMBER_ID')
+  );
+
   return {
+    teleobiUrl,
     token,
     phoneNumberId,
     businessAccountId,
     version,
     templateName,
     templateLanguage,
+    isTeleobiEnabled,
     isConfigured,
     isMockMode,
     apiUrl: `https://graph.facebook.com/${version}/${phoneNumberId}/messages`,
@@ -71,7 +73,6 @@ Delivery Team`;
 function buildMessagePayload(phone, name, productName, trackingNumber, dispatchDate, courier) {
   const config = getWhatsAppConfig();
   
-  // If template is hello_world (Meta default test template)
   if (config.templateName === 'hello_world') {
     return {
       messaging_product: 'whatsapp',
@@ -114,7 +115,7 @@ function buildMessagePayload(phone, name, productName, trackingNumber, dispatchD
 }
 
 /**
- * Sends a single WhatsApp template message via Meta Cloud API or Mock Service
+ * Sends a single WhatsApp message via Teleobi Webhook or Meta Cloud API
  */
 async function sendTemplateMessage({ phone, customerName, productName, trackingNumber, dispatchDate, courier }) {
   const config = getWhatsAppConfig();
@@ -129,10 +130,64 @@ async function sendTemplateMessage({ phone, customerName, productName, trackingN
     };
   }
 
+  // Priority 1: If Teleobi Webhook URL is provided by Sir
+  if (config.teleobiUrl) {
+    try {
+      const payload = {
+        phone: String(phone).trim(),
+        name: String(customerName || '').trim(),
+        customerName: String(customerName || '').trim(),
+        product_name: String(productName || '').trim(),
+        productName: String(productName || '').trim(),
+        tracking_number: String(trackingNumber || '').trim(),
+        trackingNumber: String(trackingNumber || '').trim(),
+        dispatch_date: String(dispatchDate || '').trim(),
+        dispatchDate: String(dispatchDate || '').trim(),
+        courier: String(courier || '').trim(),
+      };
+
+      const response = await axios.post(config.teleobiUrl, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        httpsAgent,
+        timeout: 15000,
+      });
+
+      const data = response.data;
+      const teleobiId = data?.message_id || data?.id || data?.msgId || `teleobi_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+
+      return {
+        success: true,
+        messageId: teleobiId,
+        provider: 'teleobi',
+        rawResponse: data,
+      };
+    } catch (err) {
+      let errorMsg = 'Teleobi Webhook Dispatch Error';
+      if (err.response) {
+        errorMsg = `Teleobi HTTP ${err.response.status}: ${JSON.stringify(err.response.data || err.message)}`;
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
+
+      console.error(`[ERROR] Teleobi send error for ${phone}:`, errorMsg);
+
+      // Fallback to Meta API if configured, otherwise return error
+      if (!config.isConfigured) {
+        return {
+          success: false,
+          error: `Teleobi Dispatch Error: ${errorMsg}`,
+        };
+      }
+    }
+  }
+
+  // Priority 2: Standard Meta Cloud API
   if (!config.isConfigured) {
     return {
       success: false,
-      error: 'Meta WhatsApp credentials are not configured in environment variables. Please configure WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID in .env file, or set MOCK_MODE=true for testing.',
+      error: 'WhatsApp credentials or Teleobi webhook are not configured in environment variables.',
       isConfigError: true,
     };
   }
